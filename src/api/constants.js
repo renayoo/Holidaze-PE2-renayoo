@@ -9,7 +9,7 @@ export const API_AUTH_LOGIN = `${API_AUTH}/login`;
 
 // 🏠 Venues
 export const API_VENUES = `${API_BASE}/holidaze/venues`; // Get all venues
-export const API_VENUE_BY_ID = (id) => `${API_VENUES}/${id}`; // Get single venue
+export const API_VENUE_BY_ID = (id) => `${API_VENUES}/${id}?_bookings=true`; // Get single venue
 export const API_CREATE_VENUE = `${API_VENUES}`; // POST new venue
 export const API_UPDATE_VENUE = (id) => `${API_VENUES}/${id}`; // PUT venue
 export const API_DELETE_VENUE = (id) => `${API_VENUES}/${id}`; // DELETE venue
@@ -18,6 +18,7 @@ export const API_DELETE_VENUE = (id) => `${API_VENUES}/${id}`; // DELETE venue
 export const API_BOOKINGS = `${API_BASE}/holidaze/bookings`; // Get all bookings
 export const API_CREATE_BOOKING = `${API_BOOKINGS}`; // POST a booking
 export const API_BOOKING_BY_ID = (id) => `${API_BOOKINGS}/${id}`; // GET/DELETE single booking
+export const API_VENUE_BOOKINGS = (id) => `${API_VENUES}/${id}/bookings`; // View booking on profile
 
 // 👤 Profiles
 export const API_PROFILES = `${API_BASE}/holidaze/profiles`;

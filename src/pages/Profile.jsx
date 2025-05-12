@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_PROFILE_BY_NAME } from "../api/constants";
 import { headers } from "../api/headers";
+import BookingCard from "../components/BookingCard";
 
 function Profile() {
   const [profile, setProfile] = useState(null);
@@ -19,9 +20,12 @@ function Profile() {
       if (!userName) return;
 
       try {
-        const response = await fetch(API_PROFILE_BY_NAME(userName), {
-          headers: headers(),
-        });
+        const response = await fetch(
+          `${API_PROFILE_BY_NAME(userName)}?_bookings=true&_venues=true`,
+          {
+            headers: headers(),
+          }
+        );
 
         const json = await response.json();
         if (json.errors) {
@@ -84,7 +88,6 @@ function Profile() {
       setEditing(false);
       setSuccessMessage("Profile updated successfully!");
 
-      // Oppdater localStorage brukerdata
       const currentUser = JSON.parse(localStorage.getItem("user"));
       const updatedUser = {
         ...currentUser,
@@ -94,11 +97,23 @@ function Profile() {
         },
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      window.dispatchEvent(new Event("userChanged")); 
+      window.dispatchEvent(new Event("userChanged"));
     } catch (err) {
       alert(err.message);
     }
   }
+
+  const handleBookingCancel = (bookingId) => {
+    setProfile((prev) => ({
+      ...prev,
+      bookings: prev.bookings.filter((b) => b.id !== bookingId),
+      _count: {
+        ...prev._count,
+        bookings: (prev._count?.bookings || 1) - 1,
+      },
+    }));
+  };
+  
 
   if (loading) return <p className="p-4">Loading profile...</p>;
   if (!profile) return <p className="p-4">No profile found.</p>;
@@ -222,11 +237,22 @@ function Profile() {
           </div>
         </>
       )}
+
+      {/* 📆 Bookings */}
+      {profile.bookings && profile.bookings.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Your Bookings</h2>
+          {profile.bookings.map((booking) => (
+            <BookingCard key={booking.id} booking={booking} onCancel={handleBookingCancel} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
 export default Profile;
+
 
 
 
