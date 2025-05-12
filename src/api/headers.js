@@ -1,0 +1,22 @@
+import { API_KEY } from "./constants";
+
+export function headers(body) {
+  const headers = new Headers();
+
+  if (API_KEY) {
+    headers.append("X-Noroff-API-Key", API_KEY);
+  }
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user?.data?.accessToken;
+
+  if (token) {
+    headers.append("Authorization", `Bearer ${token}`);
+  }
+
+  if (body) {
+    headers.append("Content-Type", "application/json");
+  }
+
+  return headers;
+}

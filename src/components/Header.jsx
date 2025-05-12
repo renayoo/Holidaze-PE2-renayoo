@@ -1,14 +1,64 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function Header() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  // Lytt etter endringer på bruker
+  useEffect(() => {
+    const loadUser = () => {
+      const storedUser = localStorage.getItem("user");
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    };
+
+    loadUser();
+
+    // Lytt til egendefinert event
+    window.addEventListener("userChanged", loadUser);
+
+    return () => {
+      window.removeEventListener("userChanged", loadUser);
+    };
+  }, []);
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/");
+  }
+
   return (
-    <header className="bg-red-600 text-white p-4 shadow-md">
-      <nav className="flex gap-80">
-        <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/login" className="hover:underline">Log in</Link>
-        <Link to="/register" className="hover:underline">Register</Link>
-        <Link to="/profile" className="hover:underline">Profile</Link>
-        <Link to="/create-venue" className="hover:underline">Create a venue</Link>
+    <header className="bg-blue-600 text-white p-4 shadow-md">
+      <nav className="flex justify-between items-center max-w-6xl mx-auto">
+        <div className="flex gap-6">
+          <Link to="/" className="hover:underline">Home</Link>
+
+          {!user && (
+            <>
+              <Link to="/login" className="hover:underline">Login</Link>
+              <Link to="/register" className="hover:underline">Register</Link>
+            </>
+          )}
+
+          {user && (
+            <>
+              <Link to="/profile" className="hover:underline">Profile</Link>
+
+              {user.data?.venueManager && (
+                <Link to="/create-venue" className="hover:underline">Create Venue</Link>
+              )}
+
+              <button
+                onClick={handleLogout}
+                className="hover:underline ml-2"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
       </nav>
     </header>
   );
