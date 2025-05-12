@@ -94,7 +94,7 @@ function Profile() {
         },
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      window.dispatchEvent(new Event("userChanged")); // for å oppdatere header hvis relevant
+      window.dispatchEvent(new Event("userChanged")); 
     } catch (err) {
       alert(err.message);
     }
