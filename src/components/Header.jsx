@@ -1,32 +1,27 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 function Header() {
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  });
 
-  // Lytt etter endringer på bruker
   useEffect(() => {
-    const loadUser = () => {
-      const storedUser = localStorage.getItem("user");
-      setUser(storedUser ? JSON.parse(storedUser) : null);
-    };
+    function handleChange() {
+      const stored = localStorage.getItem("user");
+      setUser(stored ? JSON.parse(stored) : null);
+    }
 
-    loadUser();
-
-    // Lytt til egendefinert event
-    window.addEventListener("userChanged", loadUser);
-
-    return () => {
-      window.removeEventListener("userChanged", loadUser);
-    };
+    window.addEventListener("userChanged", handleChange);
+    return () => window.removeEventListener("userChanged", handleChange);
   }, []);
 
   function handleLogout() {
-    localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setUser(null);
-    navigate("/");
+    localStorage.removeItem("accessToken");
+    window.dispatchEvent(new Event("userChanged"));
+    window.location.href = "/";
   }
 
   return (
@@ -45,17 +40,10 @@ function Header() {
           {user && (
             <>
               <Link to="/profile" className="hover:underline">Profile</Link>
-
               {user.data?.venueManager && (
                 <Link to="/create-venue" className="hover:underline">Create Venue</Link>
               )}
-
-              <button
-                onClick={handleLogout}
-                className="hover:underline ml-2"
-              >
-                Logout
-              </button>
+              <button onClick={handleLogout} className="hover:underline ml-2">Logout</button>
             </>
           )}
         </div>

@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { headers } from "../api/headers";
+import { useNavigate } from "react-router-dom";
 import { API_PROFILE_BY_NAME } from "../api/constants";
+import { headers } from "../api/headers";
 
 function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
 
+  const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userName = storedUser?.data?.name;
 
@@ -19,12 +24,19 @@ function Profile() {
         });
 
         const json = await response.json();
-
         if (json.errors) {
           console.error("API error:", json.errors);
           setProfile(null);
         } else {
           setProfile(json.data);
+          setForm({
+            bio: json.data.bio || "",
+            avatarUrl: json.data.avatar?.url || "https://placehold.co/80x80",
+            avatarAlt: json.data.avatar?.alt || json.data.name,
+            bannerUrl: json.data.banner?.url || "https://placehold.co/1200x300",
+            bannerAlt: json.data.banner?.alt || "Banner",
+            venueManager: json.data.venueManager || false,
+          });
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -36,30 +48,75 @@ function Profile() {
     fetchProfile();
   }, [userName]);
 
-  if (!userName) {
-    return <p className="p-4">You must be logged in to view your profile.</p>;
+  function handleChange(e) {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   }
 
-  if (loading) {
-    return <p className="p-4">Loading profile...</p>;
+  async function handleSaveChanges() {
+    try {
+      const response = await fetch(API_PROFILE_BY_NAME(userName), {
+        method: "PUT",
+        headers: headers(true),
+        body: JSON.stringify({
+          bio: form.bio,
+          avatar: {
+            url: form.avatarUrl,
+            alt: form.avatarAlt,
+          },
+          banner: {
+            url: form.bannerUrl,
+            alt: form.bannerAlt,
+          },
+          venueManager: form.venueManager,
+        }),
+      });
+
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.errors?.[0]?.message || "Failed to update profile");
+      }
+
+      setProfile(json.data);
+      setEditing(false);
+      setSuccessMessage("Profile updated successfully!");
+
+      // Oppdater localStorage brukerdata
+      const currentUser = JSON.parse(localStorage.getItem("user"));
+      const updatedUser = {
+        ...currentUser,
+        data: {
+          ...currentUser.data,
+          ...json.data,
+        },
+      };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      window.dispatchEvent(new Event("userChanged")); // for å oppdatere header hvis relevant
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
-  if (!profile) {
-    return <p className="p-4">No profile found.</p>;
-  }
+  if (loading) return <p className="p-4">Loading profile...</p>;
+  if (!profile) return <p className="p-4">No profile found.</p>;
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      {/* Banner */}
-      {profile.banner?.url && (
+      {successMessage && (
+        <p className="text-green-600 mb-2 font-semibold">{successMessage}</p>
+      )}
+
+      {!editing && (
         <img
-          src={profile.banner.url}
-          alt={profile.banner.alt || "Banner"}
+          src={profile.banner?.url || "https://placehold.co/1200x300"}
+          alt={profile.banner?.alt || "Banner"}
           className="w-full h-48 object-cover rounded mb-4"
         />
       )}
 
-      {/* Avatar og info */}
       <div className="flex items-center gap-4 mb-4">
         <img
           src={profile.avatar?.url || "https://placehold.co/80x80"}
@@ -69,20 +126,107 @@ function Profile() {
         <div>
           <h1 className="text-2xl font-bold">{profile.name}</h1>
           <p className="text-sm text-gray-600">{profile.email}</p>
-          <p className="text-sm text-gray-500">
-            {profile.bio || "No bio available."}
-          </p>
         </div>
       </div>
 
-      {/* Statistikk */}
-      <ul className="text-sm text-gray-700 mt-2 space-y-1">
-        <li>🏷️ Role: {profile.venueManager ? "Venue Manager" : "Customer"}</li>
-        <li>🏡 Venues: {profile._count?.venues ?? 0}</li>
-        <li>📆 Bookings: {profile._count?.bookings ?? 0}</li>
-      </ul>
+      {editing ? (
+        <div className="space-y-3">
+          <input
+            name="bio"
+            value={form.bio}
+            onChange={handleChange}
+            placeholder="Bio"
+            className="w-full border p-2 rounded"
+          />
+          <input
+            name="avatarUrl"
+            value={form.avatarUrl}
+            onChange={handleChange}
+            placeholder="Avatar URL"
+            className="w-full border p-2 rounded"
+          />
+          <input
+            name="avatarAlt"
+            value={form.avatarAlt}
+            onChange={handleChange}
+            placeholder="Avatar alt text"
+            className="w-full border p-2 rounded"
+          />
+          <input
+            name="bannerUrl"
+            value={form.bannerUrl}
+            onChange={handleChange}
+            placeholder="Banner URL"
+            className="w-full border p-2 rounded"
+          />
+          <input
+            name="bannerAlt"
+            value={form.bannerAlt}
+            onChange={handleChange}
+            placeholder="Banner alt text"
+            className="w-full border p-2 rounded"
+          />
+          <label className="flex gap-2 items-center">
+            <input
+              type="checkbox"
+              name="venueManager"
+              checked={form.venueManager}
+              onChange={handleChange}
+            />
+            Register as Venue Manager
+          </label>
+
+          <div className="flex gap-2">
+            <button
+              onClick={handleSaveChanges}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Save Changes
+            </button>
+            <button
+              onClick={() => setEditing(false)}
+              className="bg-gray-300 text-black px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <p className="text-sm text-gray-500 mb-2">
+            {profile.bio || "No bio available."}
+          </p>
+
+          <ul className="text-sm text-gray-700 mt-2 space-y-1">
+            <li>🏷️ Role: {profile.venueManager ? "Venue Manager" : "Customer"}</li>
+            <li>🏡 Venues: {profile._count?.venues ?? 0}</li>
+            <li>📆 Bookings: {profile._count?.bookings ?? 0}</li>
+          </ul>
+
+          <div className="mt-4 flex gap-4">
+            <button
+              onClick={() => setEditing(true)}
+              className="bg-yellow-500 text-white px-4 py-2 rounded"
+            >
+              Edit Profile
+            </button>
+
+            {profile.venueManager && (
+              <button
+                onClick={() => navigate("/create-venue")}
+                className="bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Create Venue
+              </button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
 export default Profile;
+
+
+
