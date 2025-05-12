@@ -2,19 +2,23 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_VENUES } from "../api/constants";
 import { headers } from "../api/headers";
+import SearchInput from "../components/SearchInput";
+import SortDropdown from "../components/SortDropdown";
+import Pagination from "../components/Pagination";
 
 function Home() {
   const [venues, setVenues] = useState([]);
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("newest");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 12;
 
   useEffect(() => {
     async function fetchVenues() {
       try {
-        const response = await fetch(API_VENUES, {
-          headers: headers(),
-        });
+        const response = await fetch(API_VENUES, { headers: headers() });
         const json = await response.json();
         setVenues(json.data);
       } catch (error) {
@@ -27,23 +31,13 @@ function Home() {
     fetchVenues();
   }, []);
 
-  function handleSearchChange(e) {
-    setSearch(e.target.value.toLowerCase());
-  }
-
-  function handleSortChange(e) {
-    setSortOption(e.target.value);
-  }
-
   const filteredVenues = venues
     .filter((venue) => {
       const name = venue.name?.toLowerCase() || "";
       const city = venue.location?.city?.toLowerCase() || "";
       const country = venue.location?.country?.toLowerCase() || "";
       return (
-        name.includes(search) ||
-        city.includes(search) ||
-        country.includes(search)
+        name.includes(search) || city.includes(search) || country.includes(search)
       );
     })
     .sort((a, b) => {
@@ -60,6 +54,12 @@ function Home() {
       }
     });
 
+  const totalPages = Math.ceil(filteredVenues.length / itemsPerPage);
+  const paginatedVenues = filteredVenues.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   if (loading) return <p className="p-4">Loading venues...</p>;
 
   return (
@@ -67,31 +67,15 @@ function Home() {
       <h1 className="text-3xl font-bold mb-4">Browse Venues</h1>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <input
-          type="text"
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Search by title or location..."
-          className="w-full md:w-1/2 border p-2 rounded"
-        />
-
-        <select
-          value={sortOption}
-          onChange={handleSortChange}
-          className="w-full md:w-1/4 border p-2 rounded"
-        >
-          <option value="newest">Newest</option>
-          <option value="priceLow">Price: Low → High</option>
-          <option value="priceHigh">Price: High → Low</option>
-          <option value="rating">Rating: High → Low</option>
-        </select>
+        <SearchInput search={search} onChange={setSearch} />
+        <SortDropdown sortOption={sortOption} onChange={setSortOption} />
       </div>
 
-      {filteredVenues.length === 0 ? (
+      {paginatedVenues.length === 0 ? (
         <p>No venues match your search.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filteredVenues.map((venue) => (
+          {paginatedVenues.map((venue) => (
             <div key={venue.id} className="border rounded p-4 shadow-sm">
               <Link to={`/venue/${venue.id}`}>
                 <img
@@ -104,9 +88,7 @@ function Home() {
               <p className="text-sm text-gray-600 mb-1">
                 {venue.location?.city}, {venue.location?.country}
               </p>
-              <p className="text-sm text-gray-500 mb-3">
-                ${venue.price} / night
-              </p>
+              <p className="text-sm text-gray-500 mb-3">${venue.price} / night</p>
               <Link
                 to={`/venue/${venue.id}`}
                 className="text-blue-600 hover:underline"
@@ -117,10 +99,17 @@ function Home() {
           ))}
         </div>
       )}
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }
 
 export default Home;
+
 
 
