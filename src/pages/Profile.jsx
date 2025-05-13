@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   API_PROFILE_BY_NAME,
-  API_DELETE_VENUE,
 } from "../api/constants";
 import { headers } from "../api/headers";
 import BookingCard from "../components/BookingCard";
 import YourVenues from "../components/YourVenues";
+import { getAuthUser, updateAuthUser } from "../utils/auth";
 
 function Profile() {
   const [profile, setProfile] = useState(null);
@@ -16,7 +16,7 @@ function Profile() {
   const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const storedUser = getAuthUser();
   const userName = storedUser?.data?.name || storedUser?.name;
 
   async function fetchProfile() {
@@ -42,15 +42,8 @@ function Profile() {
           venueManager: json.data.venueManager || false,
         });
 
-        const token = localStorage.getItem("accessToken");
-        const updatedUser = {
-          accessToken: token,
-          data: {
-            ...json.data,
-          },
-        };
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-        window.dispatchEvent(new Event("userChanged"));
+        // Oppdater brukerinfo for Header
+        updateAuthUser(json.data);
       }
     } catch (error) {
       console.error("Failed to fetch profile:", error);
@@ -95,17 +88,7 @@ function Profile() {
         throw new Error(json.errors?.[0]?.message || "Failed to update profile");
       }
 
-      // ✅ Oppdater user etter endring
-      const currentUser = JSON.parse(localStorage.getItem("user"));
-      const updatedUser = {
-        ...currentUser,
-        data: {
-          ...currentUser.data,
-          ...json.data,
-        },
-      };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      window.dispatchEvent(new Event("userChanged"));
+      updateAuthUser(json.data);
 
       await fetchProfile();
       setEditing(false);
@@ -260,31 +243,20 @@ function Profile() {
         </>
       )}
 
-      {profile.bookings && profile.bookings.length > 0 && (
+      {profile.bookings?.length > 0 && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-4">Your Bookings</h2>
           {profile.bookings.map((booking) => (
-            <BookingCard
-              key={booking.id}
-              booking={booking}
-              onCancel={handleBookingCancel}
-            />
+            <BookingCard key={booking.id} booking={booking} onCancel={handleBookingCancel} />
           ))}
         </div>
       )}
 
       {profile.venueManager && profile.venues?.length > 0 && (
-        <YourVenues
-          venues={profile.venues}
-          onVenueDeleted={handleVenueDeleted}
-        />
+        <YourVenues venues={profile.venues} onVenueDeleted={handleVenueDeleted} />
       )}
     </div>
   );
 }
 
 export default Profile;
-
-
-
-

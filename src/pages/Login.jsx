@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { headers } from "../api/headers";
 import { API_AUTH_LOGIN } from "../api/constants";
+import { saveAuthUser } from "../utils/auth";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -30,11 +31,8 @@ function Login() {
         throw new Error(data.errors?.[0]?.message || "Login failed");
       }
 
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("user", JSON.stringify(data));
-
-      // 🔄 Trigger oppdatering av header
-      window.dispatchEvent(new Event("userChanged"));
+      // Lagre bruker og token via helper
+      saveAuthUser({ token: data.accessToken, user: data });
 
       navigate("/profile");
     } catch (err) {

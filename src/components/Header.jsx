@@ -1,26 +1,12 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { clearAuthUser } from "../utils/auth";
 
 function Header() {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
-  });
-
-  useEffect(() => {
-    function handleChange() {
-      const stored = localStorage.getItem("user");
-      setUser(stored ? JSON.parse(stored) : null);
-    }
-
-    window.addEventListener("userChanged", handleChange);
-    return () => window.removeEventListener("userChanged", handleChange);
-  }, []);
+  const user = useAuth();
 
   function handleLogout() {
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
-    window.dispatchEvent(new Event("userChanged"));
+    clearAuthUser();
     window.location.href = "/";
   }
 
