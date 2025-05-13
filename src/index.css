@@ -1,1 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Capriola&family=Freeman&family=Pacifico&display=swap');
 @import "tailwindcss";
+
+@theme {
+    --font-pacifico: "Pacifico", "sans-serif";
+    --color-header-turqoiuse: #1EC6b6;
+}

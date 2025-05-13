@@ -13,7 +13,7 @@ function Header() {
 
   return (
     <header className="bg-[#1ec6b6] sticky top-0 z-50 text-white shadow-md">
-      <nav className="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
+      <nav className="font-pacifico flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
         <Link to="/">
           <img
             src={logo}
