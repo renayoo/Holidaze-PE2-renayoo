@@ -1,5 +1,3 @@
-// src/utils/auth.js
-
 const TOKEN_KEY = "accessToken";
 const USER_KEY = "user";
 
