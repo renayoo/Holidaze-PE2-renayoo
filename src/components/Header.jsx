@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { clearAuthUser } from "../utils/auth";
+import logo from "/assets/images/Holidaze-logo-forme.png";
 
 function Header() {
   const user = useAuth();
@@ -11,11 +12,16 @@ function Header() {
   }
 
   return (
-    <header className="bg-blue-600 text-white p-4 shadow-md">
-      <nav className="flex justify-between items-center max-w-6xl mx-auto">
-        <div className="flex gap-6">
-          <Link to="/" className="hover:underline">Home</Link>
-
+    <header className="bg-[#1ec6b6] sticky top-0 z-50 text-white shadow-md">
+      <nav className="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
+        <Link to="/">
+          <img
+            src={logo}
+            alt="Holidaze logo"
+            className="h-16 md:h-20 transition-opacity hover:opacity-90"
+          />
+        </Link>
+        <div className="flex items-center gap-6 text-sm md:text-base font-medium">
           {!user && (
             <>
               <Link to="/login" className="hover:underline">Login</Link>
@@ -29,7 +35,7 @@ function Header() {
               {user.data?.venueManager && (
                 <Link to="/create-venue" className="hover:underline">Create Venue</Link>
               )}
-              <button onClick={handleLogout} className="hover:underline ml-2">Logout</button>
+              <button onClick={handleLogout} className="hover:underline">Logout</button>
             </>
           )}
         </div>
