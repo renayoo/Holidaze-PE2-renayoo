@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { API_VENUE_BY_ID, API_CREATE_BOOKING } from "../api/constants";
 import { headers } from "../api/headers";
 import BookingCalendar from "../components/BookingCalendar";
+import ImgCarousel from "../components/ImgCarousel";
 
 function Venue() {
   const { id } = useParams();
@@ -114,11 +115,7 @@ function Venue() {
         to: new Date(dateTo).toLocaleDateString(),
       });
 
-      setBookedRanges((prev) => [
-        ...prev,
-        { start: dateFrom, end: dateTo },
-      ]);
-
+      setBookedRanges((prev) => [...prev, { start: dateFrom, end: dateTo }]);
       setSelectedDates({ dateFrom: null, dateTo: null });
     } catch (error) {
       console.error("Booking error:", error);
@@ -144,11 +141,7 @@ function Venue() {
 
       <h1 className="text-3xl font-bold mb-2">{venue.name}</h1>
 
-      <img
-        src={venue.media?.[0]?.url || "https://placehold.co/600x300"}
-        alt={venue.media?.[0]?.alt || venue.name}
-        className="w-full h-64 object-cover rounded mb-4"
-      />
+      <ImgCarousel images={venue.media} />
 
       <p className="text-gray-700 mb-4">{venue.description}</p>
 
@@ -227,6 +220,7 @@ function Venue() {
 }
 
 export default Venue;
+
 
 
 

@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_PROFILE_BY_NAME } from "../api/constants";
+import {
+  API_PROFILE_BY_NAME,
+  API_DELETE_VENUE,
+} from "../api/constants";
 import { headers } from "../api/headers";
 import BookingCard from "../components/BookingCard";
+import YourVenues from "../components/YourVenues";
 
 function Profile() {
   const [profile, setProfile] = useState(null);
@@ -13,42 +17,49 @@ function Profile() {
 
   const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user"));
-  const userName = storedUser?.data?.name;
+  const userName = storedUser?.data?.name || storedUser?.name;
+
+  async function fetchProfile() {
+    if (!userName) return;
+
+    try {
+      const response = await fetch(
+        `${API_PROFILE_BY_NAME(userName)}?_bookings=true&_venues=true&_venues_bookings=true`,
+        { headers: headers() }
+      );
+      const json = await response.json();
+      if (json.errors) {
+        console.error("API error:", json.errors);
+        setProfile(null);
+      } else {
+        setProfile(json.data);
+        setForm({
+          bio: json.data.bio || "",
+          avatarUrl: json.data.avatar?.url || "https://placehold.co/80x80",
+          avatarAlt: json.data.avatar?.alt || json.data.name,
+          bannerUrl: json.data.banner?.url || "https://placehold.co/1200x300",
+          bannerAlt: json.data.banner?.alt || "Banner",
+          venueManager: json.data.venueManager || false,
+        });
+
+        const token = localStorage.getItem("accessToken");
+        const updatedUser = {
+          accessToken: token,
+          data: {
+            ...json.data,
+          },
+        };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        window.dispatchEvent(new Event("userChanged"));
+      }
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchProfile() {
-      if (!userName) return;
-
-      try {
-        const response = await fetch(
-          `${API_PROFILE_BY_NAME(userName)}?_bookings=true&_venues=true`,
-          {
-            headers: headers(),
-          }
-        );
-
-        const json = await response.json();
-        if (json.errors) {
-          console.error("API error:", json.errors);
-          setProfile(null);
-        } else {
-          setProfile(json.data);
-          setForm({
-            bio: json.data.bio || "",
-            avatarUrl: json.data.avatar?.url || "https://placehold.co/80x80",
-            avatarAlt: json.data.avatar?.alt || json.data.name,
-            bannerUrl: json.data.banner?.url || "https://placehold.co/1200x300",
-            bannerAlt: json.data.banner?.alt || "Banner",
-            venueManager: json.data.venueManager || false,
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchProfile();
   }, [userName]);
 
@@ -84,10 +95,7 @@ function Profile() {
         throw new Error(json.errors?.[0]?.message || "Failed to update profile");
       }
 
-      setProfile(json.data);
-      setEditing(false);
-      setSuccessMessage("Profile updated successfully!");
-
+      // ✅ Oppdater user etter endring
       const currentUser = JSON.parse(localStorage.getItem("user"));
       const updatedUser = {
         ...currentUser,
@@ -98,6 +106,10 @@ function Profile() {
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       window.dispatchEvent(new Event("userChanged"));
+
+      await fetchProfile();
+      setEditing(false);
+      setSuccessMessage("Profile updated successfully!");
     } catch (err) {
       alert(err.message);
     }
@@ -113,7 +125,17 @@ function Profile() {
       },
     }));
   };
-  
+
+  const handleVenueDeleted = (venueId) => {
+    setProfile((prev) => ({
+      ...prev,
+      venues: prev.venues.filter((v) => v.id !== venueId),
+      _count: {
+        ...prev._count,
+        venues: (prev._count?.venues || 1) - 1,
+      },
+    }));
+  };
 
   if (loading) return <p className="p-4">Loading profile...</p>;
   if (!profile) return <p className="p-4">No profile found.</p>;
@@ -238,14 +260,24 @@ function Profile() {
         </>
       )}
 
-      {/* 📆 Bookings */}
       {profile.bookings && profile.bookings.length > 0 && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-4">Your Bookings</h2>
           {profile.bookings.map((booking) => (
-            <BookingCard key={booking.id} booking={booking} onCancel={handleBookingCancel} />
+            <BookingCard
+              key={booking.id}
+              booking={booking}
+              onCancel={handleBookingCancel}
+            />
           ))}
         </div>
+      )}
+
+      {profile.venueManager && profile.venues?.length > 0 && (
+        <YourVenues
+          venues={profile.venues}
+          onVenueDeleted={handleVenueDeleted}
+        />
       )}
     </div>
   );

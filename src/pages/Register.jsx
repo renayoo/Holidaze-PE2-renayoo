@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_AUTH_REGISTER, API_AUTH_LOGIN } from "../api/constants";
+import { API_AUTH_REGISTER, API_AUTH_LOGIN, API_PROFILE_BY_NAME } from "../api/constants";
 import { headers } from "../api/headers";
 
 function Register() {
@@ -27,6 +27,7 @@ function Register() {
     setError("");
 
     try {
+      // Register
       const registerRes = await fetch(API_AUTH_REGISTER, {
         method: "POST",
         headers: headers(true),
@@ -38,6 +39,7 @@ function Register() {
         throw new Error(registerData.errors?.[0]?.message || "Registration failed");
       }
 
+      // Login
       const loginRes = await fetch(API_AUTH_LOGIN, {
         method: "POST",
         headers: headers(true),
@@ -49,10 +51,29 @@ function Register() {
         throw new Error(loginData.errors?.[0]?.message || "Login after registration failed");
       }
 
-      localStorage.setItem("token", loginData.accessToken); // ✅ FIXED
-      localStorage.setItem("user", JSON.stringify(loginData));
-      window.dispatchEvent(new Event("userChanged"));
+      // Save access token
+      localStorage.setItem("accessToken", loginData.accessToken);
 
+      // Explicitly update venueManager status in profile
+      await fetch(API_PROFILE_BY_NAME(loginData.name), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${loginData.accessToken}`,
+        },
+        body: JSON.stringify({ venueManager: form.venueManager }),
+      });
+
+      // Save user in localStorage (with venueManager flag)
+      localStorage.setItem("user", JSON.stringify({
+        ...loginData,
+        data: {
+          ...loginData.data,
+          venueManager: form.venueManager,
+        },
+      }));
+
+      window.dispatchEvent(new Event("userChanged"));
       navigate("/profile");
     } catch (err) {
       setError(err.message);
