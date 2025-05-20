@@ -146,7 +146,7 @@ function EditVenue() {
           value={form.name}
           onChange={handleChange}
           placeholder="Venue name"
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded bg-white"
           required
         />
         <textarea
@@ -154,18 +154,18 @@ function EditVenue() {
           value={form.description}
           onChange={handleChange}
           placeholder="Description"
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded bg-white"
           required
         />
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 ">
           <input
             name="price"
             type="number"
             value={form.price}
             onChange={handleChange}
             placeholder="Price per night"
-            className="border p-2 rounded"
+            className="border p-2 rounded bg-white"
             required
           />
           <input
@@ -174,15 +174,15 @@ function EditVenue() {
             value={form.maxGuests}
             onChange={handleChange}
             placeholder="Max guests"
-            className="border p-2 rounded"
+            className="border p-2 rounded bg-white"
             required
           />
         </div>
         {/* Media */}
         <div className="space-y-4">
           {form.media.map((item, index) => (
-            <div key={index} className="border p-3 rounded shadow-sm">
-              <div className="grid grid-cols-2 gap-2 mb-2">
+            <div key={index} className="border p-3 rounded shadow-sm bg-white">
+              <div className="grid grid-cols-2 gap-2 mb-2 ">
                 <input
                   value={item.url}
                   onChange={(e) => handleMediaChange(e, index, "url")}
@@ -229,7 +229,7 @@ function EditVenue() {
           </button>
         </div>
 
-        <fieldset className="border p-2 rounded">
+        <fieldset className="border p-2 rounded bg-white">
           <legend className="text-sm font-medium">Amenities</legend>
           {["wifi", "parking", "breakfast", "pets"].map((key) => (
             <label key={key} className="block">
@@ -244,7 +244,7 @@ function EditVenue() {
           ))}
         </fieldset>
 
-        <fieldset className="border p-2 rounded">
+        <fieldset className="border p-2 rounded bg-white">
           <legend className="text-sm font-medium">Location</legend>
           {["address", "city", "zip", "country", "continent"].map((key) => (
             <input

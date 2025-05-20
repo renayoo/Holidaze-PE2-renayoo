@@ -118,7 +118,7 @@ function CreateVenue() {
   
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto p-4 ">
       <h1 className="text-2xl font-bold mb-4">Create a New Venue</h1>
 
       {success && (
@@ -135,7 +135,7 @@ function CreateVenue() {
           value={form.name}
           onChange={handleChange}
           placeholder="Venue name"
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded bg-white"
           required
         />
         <textarea
@@ -143,7 +143,7 @@ function CreateVenue() {
           value={form.description}
           onChange={handleChange}
           placeholder="Description"
-          className="w-full border p-2 rounded"
+          className="w-full border p-2 rounded bg-white"
           required
         />
 
@@ -154,7 +154,7 @@ function CreateVenue() {
             value={form.price}
             onChange={handleChange}
             placeholder="Price per night"
-            className="border p-2 rounded"
+            className="border p-2 rounded bg-white"
             required
           />
           <input
@@ -163,29 +163,29 @@ function CreateVenue() {
             value={form.maxGuests}
             onChange={handleChange}
             placeholder="Max guests"
-            className="border p-2 rounded"
+            className="border p-2 rounded bg-white"
             required
           />
         </div>
 
-        {/* 🖼️ Bilder */}
+        {/* 🖼️ Media */}
         <div className="space-y-4">
           {form.media.map((item, index) => (
-            <div key={index} className="border p-3 rounded shadow-sm">
+            <div key={index} className="border p-3 rounded shadow-sm bg-white">
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <input
                   name={`media.url.${index}`}
                   value={item.url}
                   onChange={(e) => handleMediaChange(e, index, "url")}
                   placeholder="Image URL"
-                  className="border p-2 rounded"
+                  className="border p-2 rounded bg-white"
                 />
                 <input
                   name={`media.alt.${index}`}
                   value={item.alt}
                   onChange={(e) => handleMediaChange(e, index, "alt")}
                   placeholder="Alt text"
-                  className="border p-2 rounded"
+                  className="border p-2 rounded bg-white"
                 />
               </div>
 
@@ -193,7 +193,7 @@ function CreateVenue() {
                 <img
                   src={item.url}
                   alt={item.alt || "Image preview"}
-                  className="w-full max-h-60 object-cover rounded border"
+                  className="w-full max-h-60 object-cover rounded border bg-white"
                   onError={(e) => {
                     e.target.src = "https://placehold.co/600x300?text=Invalid+Image";
                   }}
@@ -222,7 +222,7 @@ function CreateVenue() {
         </div>
 
         {/* ✅ Amenities */}
-        <fieldset className="border p-2 rounded">
+        <fieldset className="border p-2 rounded bg-white">
           <legend className="text-sm font-medium">Amenities</legend>
           {["wifi", "parking", "breakfast", "pets"].map((key) => (
             <label key={key} className="block">
@@ -238,8 +238,8 @@ function CreateVenue() {
         </fieldset>
 
         {/* 🌍 Location */}
-        <fieldset className="border p-2 rounded">
-          <legend className="text-sm font-medium">Location</legend>
+        <fieldset className="border p-2 rounded bg-white">
+          <legend className="text-sm font-medium ">Location</legend>
           {["address", "city", "zip", "country", "continent"].map((key) => (
             <input
               key={key}
@@ -247,7 +247,7 @@ function CreateVenue() {
               value={form.location[key]}
               onChange={handleChange}
               placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-              className="w-full border p-2 rounded mb-2"
+              className="w-full border p-2 rounded mb-2 "
             />
           ))}
         </fieldset>
