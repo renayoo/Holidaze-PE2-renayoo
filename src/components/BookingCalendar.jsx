@@ -26,7 +26,8 @@ function BookingCalendar({ selectedDates, onDateChange, bookedRanges }) {
   return (
     <div className="space-y-2">
       <p className="font-semibold">Select booking dates:</p>
-      <div className="flex gap-4">
+
+      <div className="flex flex-col sm:flex-row gap-4">
         <DatePicker
           selected={selectedDates.dateFrom}
           onChange={(date) => onDateChange({ ...selectedDates, dateFrom: date })}
@@ -36,7 +37,7 @@ function BookingCalendar({ selectedDates, onDateChange, bookedRanges }) {
           excludeDates={excludedDates}
           dayClassName={dayClassName}
           placeholderText="From"
-          className="border p-2 rounded"
+          className="w-full sm:w-auto border p-2 rounded bg-white"
         />
 
         <DatePicker
@@ -49,7 +50,7 @@ function BookingCalendar({ selectedDates, onDateChange, bookedRanges }) {
           excludeDates={excludedDates}
           dayClassName={dayClassName}
           placeholderText="To"
-          className="border p-2 rounded"
+          className="w-full sm:w-auto border p-2 rounded bg-white"
         />
       </div>
 
@@ -66,6 +67,3 @@ function BookingCalendar({ selectedDates, onDateChange, bookedRanges }) {
 }
 
 export default BookingCalendar;
-
-
-
