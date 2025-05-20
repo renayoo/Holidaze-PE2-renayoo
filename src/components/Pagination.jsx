@@ -26,14 +26,17 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   }
 
   return (
-    <div className="flex justify-center mt-6 space-x-2">
+    <div className="flex justify-center mt-8 flex-wrap gap-2">
       {getPageNumbers().map((page, index) => (
         <button
           key={index}
           onClick={() => handleClick(page)}
-          className={`px-3 py-1 rounded ${
-            page === currentPage ? "bg-blue-600 text-white" : "bg-gray-200"
-          }`}
+          className={`min-w-[40px] px-3 py-1 rounded-full transition font-medium
+            ${
+              page === currentPage
+                ? "bg-[var(--color-pagination)] text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-[var(--color-pagination)] hover:text-white"
+            }`}
           disabled={page === "..."}
         >
           {page}
@@ -44,3 +47,4 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 }
 
 export default Pagination;
+

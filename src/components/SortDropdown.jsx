@@ -5,7 +5,7 @@ function SortDropdown({ sortOption, onChange }) {
     <select
       value={sortOption}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-white md:w-1/4 border p-2 rounded"
+      className="w-full bg-white md:w-1/4 border p-2 rounded-full"
     >
       <option value="newest">Newest</option>
       <option value="priceLow">Price: Low → High</option>
