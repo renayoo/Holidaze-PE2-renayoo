@@ -49,7 +49,7 @@ function VenueCarousel({ venues }) {
           );
         }, 4000))
       }
-      className="relative w-full h-72 md:h-[28rem] rounded-xl overflow-hidden shadow-md"
+      className="relative w-full h-72 md:h-[35rem] rounded-xl overflow-hidden shadow-md"
     >
       <AnimatePresence mode="wait">
         <motion.div
