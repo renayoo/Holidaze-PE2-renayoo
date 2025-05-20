@@ -135,7 +135,7 @@ function EditVenue() {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit Venue</h1>
+      <h1 className="font-pacifico text-center text-2xl  mb-4">Edit Venue</h1>
 
       {success && <p className="text-green-600 mb-4">✅ Venue updated!</p>}
       {error && <p className="text-red-600 mb-4">⚠️ {error}</p>}
