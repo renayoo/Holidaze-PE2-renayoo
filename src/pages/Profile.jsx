@@ -6,6 +6,7 @@ import BookingCard from "../components/BookingCard";
 import YourVenues from "../components/YourVenues";
 import { getAuthUser, updateAuthUser } from "../utils/auth";
 
+
 function Profile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,7 +18,6 @@ function Profile() {
   const storedUser = getAuthUser();
   const userName = storedUser?.data?.name || storedUser?.name;
 
-  // Auto-remove success message after 3 seconds
   useEffect(() => {
     if (successMessage) {
       const timer = setTimeout(() => {
@@ -241,5 +241,3 @@ function Profile() {
 }
 
 export default Profile;
-
-
