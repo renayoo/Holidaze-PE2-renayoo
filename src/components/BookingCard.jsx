@@ -14,7 +14,6 @@ function BookingCard({ booking, onCancel }) {
 
   const handleCancel = async (e) => {
     e.stopPropagation();
-
     const confirm = window.confirm("Are you sure you want to cancel this booking?");
     if (!confirm) return;
 
@@ -39,27 +38,29 @@ function BookingCard({ booking, onCancel }) {
     }
   };
 
+  const days = (new Date(dateTo) - new Date(dateFrom)) / (1000 * 60 * 60 * 24);
+  const totalPrice = venue.price * days;
+
   return (
     <div
       onClick={handleClick}
-      className="border p-4 rounded shadow-sm mb-4 cursor-pointer hover:bg-gray-50 transition relative"
+      className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transform hover:scale-[1.02] transition duration-200 cursor-pointer mb-5"
     >
-      <h3 className="font-bold text-lg">{venue.name}</h3>
+      <h3 className="font-bold text-xl text-[var(--color-button-turq)]">{venue.name}</h3>
       <p className="text-sm text-gray-600">
         {new Date(dateFrom).toLocaleDateString()} → {new Date(dateTo).toLocaleDateString()}
       </p>
       <p className="text-sm text-gray-600">Guests: {guests}</p>
-      <p className="text-sm text-gray-600">
-        Total: ${venue.price * ((new Date(dateTo) - new Date(dateFrom)) / (1000 * 60 * 60 * 24))}
-      </p>
-
+      <p className="text-sm text-gray-600 mb-2">Total: ${totalPrice}</p>
+      <div className="text-right">
       <button
         onClick={handleCancel}
         disabled={loading}
-        className="absolute top-4 right-4 text-sm text-red-600 border border-red-300 px-2 py-1 rounded hover:bg-red-50 disabled:opacity-50"
+        className="text-sm text-white bg-red-500 hover:bg-red-300 px-3 py-1 rounded-full transition disabled:opacity-50"
       >
-        Cancel
+        Cancel booking
       </button>
+      </div>
     </div>
   );
 }

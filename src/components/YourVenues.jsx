@@ -29,37 +29,35 @@ function YourVenues({ venues, onVenueDeleted }) {
 
   return (
     <div className="mt-10">
-      <h2 className="text-xl font-semibold mb-4">Your Venues</h2>
+      <h2 className="text-2xl font-pacifico text-[var(--color-button-turq)] mb-4">🏠 Your Venues</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {venues.map((venue) => (
           <div
             key={venue.id}
             onClick={() => navigate(`/venue/${venue.id}`)}
-            className="border rounded p-4 shadow-sm cursor-pointer hover:bg-gray-50 transition"
+            className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transform hover:scale-[1.02] transition duration-200 cursor-pointer"
           >
-            <div className="mb-3">
-              <h3 className="text-lg font-bold mb-1">{venue.name}</h3>
+            <h3 className="font-semibold text-lg text-[var(--color-button-turq)] mb-2">{venue.name}</h3>
 
-              {venue.media?.[0]?.url && (
-                <img
-                  src={venue.media[0].url}
-                  alt={venue.media[0].alt || "Venue image"}
-                  className="w-full h-48 object-cover rounded mb-3"
-                />
-              )}
+            {venue.media?.[0]?.url && (
+              <img
+                src={venue.media[0].url}
+                alt={venue.media[0].alt || "Venue image"}
+                className="w-full h-40 object-cover rounded mb-3"
+              />
+            )}
 
-              {Array.isArray(venue.bookings) && venue.bookings.length > 0 && (
-                <div className="text-sm text-gray-600 space-y-1">
-                  {venue.bookings.map((booking) => (
-                    <div key={booking.id}>
-                      📅 {new Date(booking.dateFrom).toLocaleDateString()} →{" "}
-                      {new Date(booking.dateTo).toLocaleDateString()} — {booking.guests} guests
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            {Array.isArray(venue.bookings) && venue.bookings.length > 0 && (
+              <div className="text-sm text-gray-600 space-y-1 mb-3">
+                {venue.bookings.map((booking) => (
+                  <div key={booking.id}>
+                    📅 {new Date(booking.dateFrom).toLocaleDateString()} →{" "}
+                    {new Date(booking.dateTo).toLocaleDateString()} — {booking.guests} guests
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="flex justify-end gap-2">
               <button
@@ -67,7 +65,7 @@ function YourVenues({ venues, onVenueDeleted }) {
                   e.stopPropagation();
                   navigate(`/edit-venue/${venue.id}`);
                 }}
-                className="border border-blue-600 text-blue-600 text-sm px-3 py-1 rounded hover:bg-blue-50"
+                className="text-sm text-white bg-yellow-400 hover:bg-yellow-300 px-3 py-1 rounded-full"
               >
                 Edit
               </button>
@@ -76,7 +74,7 @@ function YourVenues({ venues, onVenueDeleted }) {
                   e.stopPropagation();
                   handleDeleteVenue(venue.id);
                 }}
-                className="border border-red-600 text-red-600 text-sm px-3 py-1 rounded hover:bg-red-50"
+                className="text-sm text-white bg-red-500 hover:bg-red-300 px-3 py-1 rounded-full"
               >
                 Delete
               </button>
@@ -89,4 +87,5 @@ function YourVenues({ venues, onVenueDeleted }) {
 }
 
 export default YourVenues;
+
 

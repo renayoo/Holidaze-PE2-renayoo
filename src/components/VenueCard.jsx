@@ -22,7 +22,7 @@ function VenueCard({ venue }) {
         </p>
 
         <p className="text-sm text-gray-700">
-          💰 {venue.price} NOK / night
+          💰 {venue.price} $ / night
         </p>
 
         <Link
