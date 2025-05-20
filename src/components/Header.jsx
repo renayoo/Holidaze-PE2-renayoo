@@ -12,7 +12,7 @@ function Header() {
   }
 
   return (
-    <header className="bg-[#1ec6b6] sticky top-0 z-50 text-white shadow-md">
+    <header className="bg-header-dark-turqoiuse sticky top-0 z-50 text-white shadow-md">
       <nav className="font-pacifico flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
         <Link to="/">
           <img

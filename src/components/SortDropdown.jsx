@@ -10,7 +10,6 @@ function SortDropdown({ sortOption, onChange }) {
       <option value="newest">Newest</option>
       <option value="priceLow">Price: Low → High</option>
       <option value="priceHigh">Price: High → Low</option>
-      <option value="rating">Rating: High → Low</option>
     </select>
   );
 }

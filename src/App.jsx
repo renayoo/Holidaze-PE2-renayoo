@@ -11,19 +11,23 @@ import Footer from "./components/Footer";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/venue/:id" element={<Venue />} />
-        <Route path="/create-venue" element={<CreateVenue />} />
-        <Route path="/edit-venue/:id" element={<EditVenue />} />
-      </Routes>
-      <Footer/>
-    </BrowserRouter>
+    <div className="min-h-screen flex flex-col bg-sand text-black">
+      <BrowserRouter>
+        <Header />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/venue/:id" element={<Venue />} />
+            <Route path="/create-venue" element={<CreateVenue />} />
+            <Route path="/edit-venue/:id" element={<EditVenue />} />
+          </Routes>
+        </main>
+        <Footer />
+      </BrowserRouter>
+    </div>
   );
 }
 
