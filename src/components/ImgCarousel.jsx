@@ -7,63 +7,51 @@ function ImgCarousel({ images }) {
 
   if (!images || images.length === 0) {
     return (
-      <img
-        src="https://placehold.co/800x400"
-        alt="No images"
-        className="w-full h-80 object-cover rounded"
-      />
+      <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+        <span className="text-gray-500">No images</span>
+      </div>
     );
   }
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
+  const prev = () =>
+    setCurrentIndex((i) => (i === 0 ? images.length - 1 : i - 1));
+  const next = () =>
+    setCurrentIndex((i) => (i === images.length - 1 ? 0 : i + 1));
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-
-  const handleTouchStart = (e) => {
-    setTouchStartX(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = (e) => {
-    if (!touchStartX) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX - touchEndX;
-
-    if (diff > 50) handleNext(); // swipe left
-    else if (diff < -50) handlePrev(); // swipe right
-
+  const onTouchStart = (e) => setTouchStartX(e.touches[0].clientX);
+  const onTouchEnd = (e) => {
+    if (touchStartX === null) return;
+    const delta = touchStartX - e.changedTouches[0].clientX;
+    if (delta > 50) next();
+    else if (delta < -50) prev();
     setTouchStartX(null);
   };
 
   return (
     <div
-      className="relative mb-6"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      className="relative w-full h-full overflow-hidden rounded-lg"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       <img
         src={images[currentIndex].url}
         alt={images[currentIndex].alt || "Venue image"}
-        className="w-full h-96 object-cover rounded"
+        className="w-full h-full object-cover object-center transition-transform duration-500"
       />
 
+      {/* Prev/Next */}
       {images.length > 1 && (
         <>
-          {/* Arrows only on medium screens and up */}
           <button
-            onClick={handlePrev}
-            className="hidden md:block absolute top-1/2 -left-12 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-gray-700 text-white p-3 rounded"
+            onClick={prev}
+            className="absolute top-1/2 left-4 md:left-6 transform -translate-y-1/2 bg-black bg-opacity-25 hover:bg-opacity-40 text-white p-2 rounded-full"
             aria-label="Previous"
           >
             <FaChevronLeft />
           </button>
-
           <button
-            onClick={handleNext}
-            className="hidden md:block absolute top-1/2 -right-12 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-gray-700 text-white p-3 rounded"
+            onClick={next}
+            className="absolute top-1/2 right-4 md:right-6 transform -translate-y-1/2 bg-black bg-opacity-25 hover:bg-opacity-40 text-white p-2 rounded-full"
             aria-label="Next"
           >
             <FaChevronRight />
@@ -71,12 +59,13 @@ function ImgCarousel({ images }) {
         </>
       )}
 
-      <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1">
-        {images.map((_, index) => (
+      {/* Dots */}
+      <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1">
+        {images.map((_, idx) => (
           <span
-            key={index}
-            className={`w-2 h-2 rounded-full ${
-              index === currentIndex ? "bg-white" : "bg-gray-400"
+            key={idx}
+            className={`block w-2 h-2 rounded-full ${
+              idx === currentIndex ? "bg-white" : "bg-gray-400"
             }`}
           />
         ))}
@@ -86,4 +75,5 @@ function ImgCarousel({ images }) {
 }
 
 export default ImgCarousel;
+
 
