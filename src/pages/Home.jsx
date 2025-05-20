@@ -110,6 +110,10 @@ function Home() {
         <SortDropdown sortOption={sortOption} onChange={setSortOption} />
       </div>
 
+      <h2 className="font-pacifico text-3xl text-black text-center mt-6">
+        🌴 Holidaze Venues
+      </h2>
+
       {paginatedVenues.length === 0 ? (
         <p>No venues match your search.</p>
       ) : (
