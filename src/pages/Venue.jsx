@@ -155,11 +155,31 @@ function Venue() {
             </div>
 
             {/* Amenities icons */}
-            <div className="flex space-x-4">
-              {venue.meta.wifi && <FaWifi title="Wi-Fi" size={20} />}
-              {venue.meta.parking && <FaCar title="Parking" size={20} />}
-              {venue.meta.breakfast && <FaCoffee title="Breakfast" size={20} />}
-              {venue.meta.pets && <FaPaw title="Pets allowed" size={20} />}
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+              {venue.meta.wifi && (
+                <div className="flex items-center space-x-1">
+                  <FaWifi title="Wi-Fi" size={20} />
+                  <span>Wi-Fi</span>
+                </div>
+              )}
+              {venue.meta.parking && (
+                <div className="flex items-center space-x-1">
+                  <FaCar title="Parking" size={20} />
+                  <span>Parking</span>
+                </div>
+              )}
+              {venue.meta.breakfast && (
+                <div className="flex items-center space-x-1">
+                  <FaCoffee title="Breakfast" size={20} />
+                  <span>Breakfast</span>
+                </div>
+              )}
+              {venue.meta.pets && (
+                <div className="flex items-center space-x-1">
+                  <FaPaw title="Pets allowed" size={20} />
+                  <span>Pets allowed</span>
+                </div>
+              )}
             </div>
           </div>
 

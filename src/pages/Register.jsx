@@ -79,7 +79,7 @@ function Register() {
     <div
       className="min-h-screen bg-contain bg-repeat bg-center flex items-center justify-center"
       style={{
-        backgroundImage: `url('https://sdmntpritalynorth.oaiusercontent.com/files/00000000-9ec8-6246-a639-11ecfbee440e/raw?se=2025-05-21T12%3A34%3A52Z&sp=r&sv=2024-08-04&sr=b&scid=174e0997-e434-594c-af6c-210d7f32ff00&skoid=b928fb90-500a-412f-a661-1ece57a7c318&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-21T07%3A53%3A04Z&ske=2025-05-22T07%3A53%3A04Z&sks=b&skv=2024-08-04&sig=SprWX5pbBCLzffgtcfgUdse9z9eCFszM5VhBi9T9Zsw%3D')`,
+        backgroundImage: `url('/assets/images/Palms-register-login-bg.png')`,
         backgroundColor: "#FFFBDE",
       }}
     >
