@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { API_UPDATE_VENUE, API_VENUE_BY_ID } from "../api/constants";
+import { API_UPDATE_VENUE, API_VENUE_BY_ID, API_DELETE_VENUE } from "../api/constants";
 import { headers } from "../api/headers";
 
 function EditVenue() {
