@@ -19,6 +19,12 @@ function Home() {
 
   const itemsPerPage = 12;
 
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch]);
+
+
   useEffect(() => {
     async function fetchVenues() {
       try {
@@ -27,6 +33,7 @@ function Home() {
         params.append("limit", itemsPerPage.toString());
         params.append("page", currentPage.toString());
 
+        // Sorting
         if (sortOption === "newest") {
           params.append("sort", "created");
           params.append("sortOrder", "desc");
@@ -41,15 +48,11 @@ function Home() {
         params.append("_owner", "true");
         params.append("_bookings", "true");
 
+        // Search (server-side)
         let endpoint = `${API_VENUES}?${params.toString()}`;
-
-        const isUsingServerSearch =
-          debouncedSearch.trim().length > 0 && sortOption === "newest";
-
-        if (isUsingServerSearch) {
-          const searchParams = new URLSearchParams(params);
-          searchParams.append("q", debouncedSearch.trim());
-          endpoint = `${API_VENUES}/search?${searchParams.toString()}`;
+        if (debouncedSearch.trim().length > 0) {
+          params.append("q", debouncedSearch.trim());
+          endpoint = `${API_VENUES}/search?${params.toString()}`;
         }
 
         const response = await fetch(endpoint, { headers: headers() });
@@ -68,69 +71,49 @@ function Home() {
     fetchVenues();
   }, [debouncedSearch, sortOption, currentPage]);
 
-
-  let displayedVenues = venues;
-  const isUsingLocalSearch =
-    debouncedSearch.trim().length > 0 && sortOption !== "newest";
-
-  if (isUsingLocalSearch) {
-    displayedVenues = venues.filter((venue) => {
-      const query = debouncedSearch.toLowerCase();
-      return (
-        venue.name?.toLowerCase().includes(query) ||
-        venue.description?.toLowerCase().includes(query) ||
-        venue.location?.city?.toLowerCase().includes(query) ||
-        venue.location?.country?.toLowerCase().includes(query)
-      );
-    });
-  }
-
-  if (sortOption === "priceLow") {
-    displayedVenues.sort((a, b) => a.price - b.price);
-  } else if (sortOption === "priceHigh") {
-    displayedVenues.sort((a, b) => b.price - a.price);
-  }
-
   const totalPages = Math.ceil(totalCount / itemsPerPage);
-  const paginatedVenues = isUsingLocalSearch
-    ? displayedVenues.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      )
-    : displayedVenues;
 
   if (loading) return <p className="p-4">Loading venues...</p>;
 
   return (
     <div className="p-4 max-w-6xl mx-auto space-y-10">
+      {/* Carousel on top */}
       <VenueCarousel venues={venues} />
 
+      {/* Search + Sort */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <SearchInput search={search} onChange={setSearch} />
         <SortDropdown sortOption={sortOption} onChange={setSortOption} />
       </div>
 
+      {/* Title */}
       <h2 className="font-pacifico text-3xl text-black text-center mt-6">
         🌴 Holidaze Venues
       </h2>
 
-      {paginatedVenues.length === 0 ? (
+      {/* Venue grid or empty */}
+      {venues.length === 0 ? (
         <p>No venues match your search.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {paginatedVenues.map((venue) => (
+          {venues.map((venue) => (
             <VenueCard key={venue.id} venue={venue} />
           ))}
         </div>
       )}
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 }
 
 export default Home;
+
+
