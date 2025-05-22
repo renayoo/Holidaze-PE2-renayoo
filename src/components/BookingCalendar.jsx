@@ -27,7 +27,7 @@ function BookingCalendar({ selectedDates, onDateChange, bookedRanges }) {
     <div className="space-y-2">
       <p className="font-semibold">Select booking dates:</p>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col [@media(min-width:950px)]:flex-row gap-4">
         <DatePicker
           selected={selectedDates.dateFrom}
           onChange={(date) => onDateChange({ ...selectedDates, dateFrom: date })}

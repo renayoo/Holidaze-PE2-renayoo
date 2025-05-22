@@ -178,7 +178,7 @@ function EditVenue() {
             required
           />
         </div>
-        {/* Media */}
+
         <div className="space-y-4">
           {form.media.map((item, index) => (
             <div key={index} className="border p-3 rounded shadow-sm bg-white">
