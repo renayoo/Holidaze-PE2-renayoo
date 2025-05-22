@@ -55,27 +55,29 @@ function Header() {
         </button>
       </nav>
 
-      {/* Mobile menu panel */}
-      {menuOpen && (
-        <div className="md:hidden px-6 pb-4 flex flex-col gap-3 text-sm font-pacifico font-medium bg-header-dark-turqoiuse">
-          {!user && (
-            <>
-              <Link to="/login" className="hover:underline" onClick={() => setMenuOpen(false)}>Login</Link>
-              <Link to="/register" className="hover:underline" onClick={() => setMenuOpen(false)}>Register</Link>
-            </>
-          )}
+      {/* Mobile menu panel with animation */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out transform ${
+          menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        } px-6 flex flex-col gap-3 text-sm font-pacifico font-medium bg-header-dark-turqoiuse`}
+      >
+        {!user && (
+          <>
+            <Link to="/login" className="hover:underline" onClick={() => setMenuOpen(false)}>Login</Link>
+            <Link to="/register" className="hover:underline mb-4" onClick={() => setMenuOpen(false)}>Register</Link>
+          </>
+        )}
 
-          {user && (
-            <>
-              <Link to="/profile" className="hover:underline" onClick={() => setMenuOpen(false)}>Profile</Link>
-              {user.data?.venueManager && (
-                <Link to="/create-venue" className="hover:underline" onClick={() => setMenuOpen(false)}>Create Venue</Link>
-              )}
-              <button onClick={handleLogout} className="hover:underline text-left">Logout</button>
-            </>
-          )}
-        </div>
-      )}
+        {user && (
+          <>
+            <Link to="/profile" className="hover:underline" onClick={() => setMenuOpen(false)}>Profile</Link>
+            {user.data?.venueManager && (
+              <Link to="/create-venue" className="hover:underline" onClick={() => setMenuOpen(false)}>Create Venue</Link>
+            )}
+            <button onClick={handleLogout} className="hover:underline text-left mb-4">Logout</button>
+          </>
+        )}
+      </div>
     </header>
   );
 }
