@@ -167,8 +167,8 @@ function YourVenues({ venues: initialVenues, onVenueDeleted, readOnly = false })
                       className="text-sm text-blue-600 hover:underline"
                     >
                       {showAll
-                        ? "Vis færre bookings"
-                        : `Vis alle ${futureBookings.length} bookings`}
+                        ? "Show less"
+                        : `Show all ${futureBookings.length} bookings`}
                     </button>
                   )}
                 </div>
