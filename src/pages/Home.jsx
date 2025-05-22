@@ -95,7 +95,8 @@ function Home() {
       {venues.length === 0 ? (
         <p>No venues match your search.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
           {venues.map((venue) => (
             <VenueCard key={venue.id} venue={venue} />
           ))}
