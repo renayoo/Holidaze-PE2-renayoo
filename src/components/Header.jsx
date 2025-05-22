@@ -29,16 +29,16 @@ function Header() {
         <div className="hidden md:flex items-center gap-6 text-sm md:text-base font-medium">
           {!user && (
             <>
-              <Link to="/login" className="hover:underline">Login</Link>
-              <Link to="/register" className="hover:underline">Register</Link>
+              <Link to="/login" className="hover:underline py-2" onClick={() => setMenuOpen(false)}>Login</Link>
+              <Link to="/register" className="hover:underline py-2 mb-4" onClick={() => setMenuOpen(false)}>Register</Link>
             </>
           )}
 
           {user && (
             <>
-              <Link to="/profile" className="hover:underline">Profile</Link>
+              <Link to="/profile" className="hover:underline py-2" onClick={() => setMenuOpen(false)}>Profile</Link>
               {user.data?.venueManager && (
-                <Link to="/create-venue" className="hover:underline">Create Venue</Link>
+                <Link to="/create-venue" className="hover:underline py-2" onClick={() => setMenuOpen(false)}>Create Venue</Link>
               )}
               <button onClick={handleLogout} className="hover:underline">Logout</button>
             </>
@@ -59,22 +59,22 @@ function Header() {
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out transform ${
           menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        } px-6 flex flex-col gap-3 text-sm font-pacifico font-medium bg-header-dark-turqoiuse`}
+        } px-6 flex flex-col text-base font-pacifico bg-header-dark-turqoiuse pt-2`}
       >
         {!user && (
           <>
-            <Link to="/login" className="hover:underline" onClick={() => setMenuOpen(false)}>Login</Link>
-            <Link to="/register" className="hover:underline mb-4" onClick={() => setMenuOpen(false)}>Register</Link>
+            <Link to="/login" className="hover:underline py-2 border-b border-white/20" onClick={() => setMenuOpen(false)}>Login</Link>
+            <Link to="/register" className="hover:underline py-3 border-b border-white/20" onClick={() => setMenuOpen(false)}>Register</Link>
           </>
         )}
 
         {user && (
           <>
-            <Link to="/profile" className="hover:underline" onClick={() => setMenuOpen(false)}>Profile</Link>
+            <Link to="/profile" className="hover:underline py-2 border-b border-white/20" onClick={() => setMenuOpen(false)}>Profile</Link>
             {user.data?.venueManager && (
-              <Link to="/create-venue" className="hover:underline" onClick={() => setMenuOpen(false)}>Create Venue</Link>
+              <Link to="/create-venue" className="hover:underline py-2 border-b border-white/20" onClick={() => setMenuOpen(false)}>Create Venue</Link>
             )}
-            <button onClick={handleLogout} className="hover:underline text-left mb-4">Logout</button>
+            <button onClick={handleLogout} className="hover:underline text-left py-3">Logout</button>
           </>
         )}
       </div>
@@ -83,3 +83,4 @@ function Header() {
 }
 
 export default Header;
+
