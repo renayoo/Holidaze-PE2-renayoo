@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { FaWifi, FaCar, FaCoffee, FaPaw, FaStar, FaRegStar } from "react-icons/fa";
 import { API_VENUE_BY_ID, API_CREATE_BOOKING } from "../api/constants";
 import { headers } from "../api/headers";
@@ -8,6 +8,8 @@ import ImgCarousel from "../components/ImgCarousel";
 
 function Venue() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [venue, setVenue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedDates, setSelectedDates] = useState({ dateFrom: null, dateTo: null });
@@ -47,6 +49,7 @@ function Venue() {
       return () => clearTimeout(t);
     }
   }, [confirmation]);
+
   useEffect(() => {
     if (errorMessage) {
       const t = setTimeout(() => setErrorMessage(null), 3000);
@@ -60,6 +63,7 @@ function Venue() {
     const diff = dateTo.getTime() - dateFrom.getTime();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   })();
+
   const totalPrice = nights * (venue?.price || 0);
 
   const overlaps = () => {
@@ -107,9 +111,10 @@ function Venue() {
   if (loading) return <p className="p-4">Loading venue...</p>;
   if (!venue) return <p className="p-4">Venue not found.</p>;
 
+  const owner = venue?.owner;
+
   return (
     <div className="p-4 max-w-5xl mx-auto">
-      {/* Notifications */}
       {confirmation && (
         <div className="fixed top-4 right-4 bg-green-100 text-green-800 px-4 py-2 rounded shadow z-50 animate-fade">
           ✅ Booking confirmed: {confirmation.from} → {confirmation.to}
@@ -121,17 +126,14 @@ function Venue() {
         </div>
       )}
 
-      {/* Title */}
       <h1 className="font-pacifico text-3xl text-center mb-6">{venue.name}</h1>
 
-      {/* Main layout: two columns on md+ */}
       <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="md:w-1/2">
           <ImgCarousel images={venue.media} />
         </div>
 
         <div className="md:w-1/2 p-6 space-y-6">
-          {/* Description & details */}
           <div className="space-y-4">
             <p className="text-gray-700">{venue.description}</p>
             <p className="text-sm text-gray-600">
@@ -142,7 +144,6 @@ function Venue() {
               <span>👥 {venue.maxGuests} guests</span>
             </div>
 
-            {/* Rating */}
             <div className="flex items-center">
               {[...Array(5)].map((_, i) =>
                 i < Math.round(venue.rating) ? (
@@ -154,36 +155,34 @@ function Venue() {
               <span className="ml-2 text-gray-600">{venue.rating.toFixed(1)}</span>
             </div>
 
-            {/* Amenities icons */}
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
               {venue.meta.wifi && (
                 <div className="flex items-center space-x-1">
-                  <FaWifi title="Wi-Fi" size={20} />
+                  <FaWifi size={20} />
                   <span>Wi-Fi</span>
                 </div>
               )}
               {venue.meta.parking && (
                 <div className="flex items-center space-x-1">
-                  <FaCar title="Parking" size={20} />
+                  <FaCar size={20} />
                   <span>Parking</span>
                 </div>
               )}
               {venue.meta.breakfast && (
                 <div className="flex items-center space-x-1">
-                  <FaCoffee title="Breakfast" size={20} />
+                  <FaCoffee size={20} />
                   <span>Breakfast</span>
                 </div>
               )}
               {venue.meta.pets && (
                 <div className="flex items-center space-x-1">
-                  <FaPaw title="Pets allowed" size={20} />
+                  <FaPaw size={20} />
                   <span>Pets allowed</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Booking section */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Book This Venue</h2>
             <BookingCalendar
@@ -222,20 +221,42 @@ function Venue() {
             ) : (
               <p className="text-red-600">You must be logged in to book.</p>
             )}
+
+            {/* 👤 Owner info */}
+            {owner && (
+              <div
+                onClick={() => navigate(`/profile?username=${owner.name}`)}
+                className="mt-6 flex items-center gap-3 cursor-pointer hover:opacity-90 transition"
+              >
+                <img
+                  src={owner.avatar?.url || "https://placehold.co/64x64"}
+                  alt={owner.avatar?.alt || owner.name}
+                  className="w-12 h-12 rounded-full border shadow object-cover"
+                />
+                <span className="font-pacifico text-lg text-[var(--color-button-turq)]">
+                  {owner.name}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Fade animation */}
       <style>{`
-        @keyframes fade-in { from {opacity:0;transform:translateY(-4px)} to {opacity:1;transform:translateY(0)} }
-        .animate-fade { animation: fade-in 0.3s ease-in-out; }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(-4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade {
+          animation: fade-in 0.3s ease-in-out;
+        }
       `}</style>
     </div>
   );
 }
 
 export default Venue;
+
 
 
 
