@@ -243,9 +243,11 @@ function Profile() {
           <h2 className="text-2xl font-pacifico text-[var(--color-button-turq)] mb-4">
             📆 Your Bookings
           </h2>
-          {profile.bookings.map((b) => (
-            <BookingCard key={b.id} booking={b} onCancel={handleBookingCancel} />
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {profile.bookings.map((b) => (
+              <BookingCard key={b.id} booking={b} onCancel={handleBookingCancel} />
+            ))}
+          </div>
         </div>
       )}
 

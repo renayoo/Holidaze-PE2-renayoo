@@ -44,25 +44,35 @@ function BookingCard({ booking, onCancel }) {
   return (
     <div
       onClick={handleClick}
-      className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transform hover:scale-[1.02] transition duration-200 cursor-pointer mb-5"
+      className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transform hover:scale-[1.02] transition duration-200 cursor-pointer"
     >
-      <h3 className="font-bold text-xl text-[var(--color-button-turq)]">{venue.name}</h3>
+      {venue.media?.[0]?.url && (
+        <img
+          src={venue.media[0].url}
+          alt={venue.media[0].alt || venue.name}
+          className="w-full h-40 object-cover rounded mb-3"
+        />
+      )}
+
+      <h3 className="font-bold text-lg text-[var(--color-button-turq)] mb-1">{venue.name}</h3>
       <p className="text-sm text-gray-600">
-        {new Date(dateFrom).toLocaleDateString()} → {new Date(dateTo).toLocaleDateString()}
+        📅 {new Date(dateFrom).toLocaleDateString()} → {new Date(dateTo).toLocaleDateString()}
       </p>
-      <p className="text-sm text-gray-600">Guests: {guests}</p>
-      <p className="text-sm text-gray-600 mb-2">Total: ${totalPrice}</p>
+      <p className="text-sm text-gray-600">👥 {guests} guests</p>
+      <p className="text-sm text-gray-600 mb-3">💰 Total: ${totalPrice}</p>
+
       <div className="text-right">
-      <button
-        onClick={handleCancel}
-        disabled={loading}
-        className="text-sm text-white bg-red-500 hover:bg-red-300 px-3 py-1 rounded-full transition disabled:opacity-50"
-      >
-        Cancel booking
-      </button>
+        <button
+          onClick={handleCancel}
+          disabled={loading}
+          className="text-sm text-white bg-red-500 hover:bg-red-400 px-3 py-1 rounded-full transition disabled:opacity-50"
+        >
+          Cancel booking
+        </button>
       </div>
     </div>
   );
 }
 
 export default BookingCard;
+
