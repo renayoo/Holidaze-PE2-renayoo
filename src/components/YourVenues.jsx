@@ -4,7 +4,7 @@ import { API_DELETE_VENUE, API_PROFILES } from "../api/constants";
 import { headers } from "../api/headers";
 import { getAuthUser } from "../utils/auth";
 
-function YourVenues({ venues: initialVenues, onVenueDeleted }) {
+function YourVenues({ venues: initialVenues, onVenueDeleted, readOnly = false }) {
   const [venueBookings, setVenueBookings] = useState({});
   const [expandedVenues, setExpandedVenues] = useState({});
   const navigate = useNavigate();
@@ -37,10 +37,14 @@ function YourVenues({ venues: initialVenues, onVenueDeleted }) {
       }
     };
 
-    fetchUserVenuesWithBookings();
-  }, []);
+    if (!readOnly) {
+      fetchUserVenuesWithBookings();
+    }
+  }, [readOnly]);
 
   const handleDeleteVenue = async (venueId) => {
+    if (!onVenueDeleted) return;
+
     const confirm = window.confirm("Are you sure you want to delete this venue?");
     if (!confirm) return;
 
@@ -71,7 +75,9 @@ function YourVenues({ venues: initialVenues, onVenueDeleted }) {
 
   return (
     <div className="mt-10">
-      <h2 className="text-2xl font-pacifico text-[var(--color-button-turq)] mb-6">🏠 Your Venues</h2>
+      <h2 className="text-2xl font-pacifico text-[var(--color-button-turq)] mb-6">
+        {readOnly ? "🏡 Venues" : "🏡 Your Venues"}
+      </h2>
 
       <div className="flex flex-wrap gap-8">
         {initialVenues.map((venue) => {
@@ -82,8 +88,7 @@ function YourVenues({ venues: initialVenues, onVenueDeleted }) {
 
           const totalEarnings = futureBookings.reduce((sum, b) => {
             const nights =
-              (new Date(b.dateTo) - new Date(b.dateFrom)) /
-              (1000 * 60 * 60 * 24);
+              (new Date(b.dateTo) - new Date(b.dateFrom)) / (1000 * 60 * 60 * 24);
             return sum + nights * (venue.price || 0);
           }, 0);
 
@@ -110,11 +115,13 @@ function YourVenues({ venues: initialVenues, onVenueDeleted }) {
                 />
               )}
 
-              <div className="text-sm font-medium text-gray-700 mb-3">
-                💰 Total earnings: ${totalEarnings.toFixed(0)}
-              </div>
+              {!readOnly && (
+                <div className="text-sm font-medium text-gray-700 mb-3">
+                  💰 Total earnings: ${totalEarnings.toFixed(0)}
+                </div>
+              )}
 
-              {futureBookings.length > 0 ? (
+              {futureBookings.length > 0 && !readOnly && (
                 <div className="space-y-3 mb-4">
                   {bookingsToShow.map((booking) => {
                     const nights =
@@ -138,13 +145,14 @@ function YourVenues({ venues: initialVenues, onVenueDeleted }) {
                           💰 ${totalPrice.toFixed(0)}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-800">
-                        🙋 <a
-                              href={`/profile?username=${customerName}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="text-blue-600 hover:underline"
-                            >
-                              {customerName}
-                            </a>
+                          🙋{" "}
+                          <a
+                            href={`/profile?username=${customerName}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-600 hover:underline"
+                          >
+                            {customerName}
+                          </a>
                         </div>
                       </div>
                     );
@@ -159,35 +167,35 @@ function YourVenues({ venues: initialVenues, onVenueDeleted }) {
                       className="text-sm text-blue-600 hover:underline"
                     >
                       {showAll
-                        ? "Show less bookings"
-                        : `View all ${futureBookings.length} bookings`}
+                        ? "Vis færre bookings"
+                        : `Vis alle ${futureBookings.length} bookings`}
                     </button>
                   )}
                 </div>
-              ) : (
-                <p className="text-sm text-gray-400 italic mb-4">No upcoming bookings</p>
               )}
 
-              <div className="flex justify-end gap-3 mt-auto pt-4 border-t">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/edit-venue/${venue.id}`);
-                  }}
-                  className="text-sm font-medium text-white bg-yellow-400 hover:bg-yellow-300 px-4 py-1 rounded-full shadow"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteVenue(venue.id);
-                  }}
-                  className="text-sm font-medium text-white bg-red-500 hover:bg-red-400 px-4 py-1 rounded-full shadow"
-                >
-                  Delete
-                </button>
-              </div>
+              {!readOnly && (
+                <div className="flex justify-end gap-3 mt-auto pt-4 border-t">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/edit-venue/${venue.id}`);
+                    }}
+                    className="text-sm font-medium text-white bg-yellow-400 hover:bg-yellow-300 px-4 py-1 rounded-full shadow"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteVenue(venue.id);
+                    }}
+                    className="text-sm font-medium text-white bg-red-500 hover:bg-red-400 px-4 py-1 rounded-full shadow"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
@@ -197,6 +205,7 @@ function YourVenues({ venues: initialVenues, onVenueDeleted }) {
 }
 
 export default YourVenues;
+
 
 
 

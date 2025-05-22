@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { API_PROFILE_BY_NAME } from "../api/constants";
 import { headers } from "../api/headers";
 import BookingCard from "../components/BookingCard";
 import YourVenues from "../components/YourVenues";
 import { getAuthUser, updateAuthUser } from "../utils/auth";
 
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 function Profile() {
   const [profile, setProfile] = useState(null);
@@ -14,15 +17,17 @@ function Profile() {
   const [form, setForm] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
 
+  const query = useQuery();
   const navigate = useNavigate();
   const storedUser = getAuthUser();
-  const userName = storedUser?.data?.name || storedUser?.name;
+  const urlUsername = query.get("username");
+  const fallbackUsername = storedUser?.data?.name || storedUser?.name;
+  const userName = urlUsername || fallbackUsername;
+  const isOwnProfile = userName === fallbackUsername;
 
   useEffect(() => {
     if (successMessage) {
-      const timer = setTimeout(() => {
-        setSuccessMessage("");
-      }, 3000);
+      const timer = setTimeout(() => setSuccessMessage(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [successMessage]);
@@ -41,6 +46,9 @@ function Profile() {
         setProfile(null);
       } else {
         setProfile(json.data);
+        if (isOwnProfile) {
+          updateAuthUser(json.data);
+        }
         setForm({
           bio: json.data.bio || "",
           avatarUrl: json.data.avatar?.url || "",
@@ -49,7 +57,6 @@ function Profile() {
           bannerAlt: json.data.banner?.alt || "Banner",
           venueManager: json.data.venueManager || false,
         });
-        updateAuthUser(json.data);
       }
     } catch (error) {
       console.error("Failed to fetch profile:", error);
@@ -62,13 +69,13 @@ function Profile() {
     fetchProfile();
   }, [userName]);
 
-  function handleChange(e) {
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
-  }
+  };
 
   async function handleSaveChanges() {
     try {
@@ -131,9 +138,7 @@ function Profile() {
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-8">
       {successMessage && (
-        <p className="text-green-600 font-semibold text-center transition-opacity duration-500">
-          {successMessage}
-        </p>
+        <p className="text-green-600 font-semibold text-center">{successMessage}</p>
       )}
 
       <div className="relative">
@@ -152,10 +157,21 @@ function Profile() {
       </div>
 
       <div className="mt-12 px-4">
-        <h1 className="text-3xl font-pacifico text-[var(--color-button-turq)] mb-5">{profile.name}</h1>
+        <h1 className="text-3xl font-pacifico text-[var(--color-button-turq)] mb-5">
+          {profile.name}
+        </h1>
         <p className="text-sm text-gray-600 mb-5">{profile.email}</p>
 
-        {editing ? (
+        {!isOwnProfile && (
+          <button
+            onClick={() => navigate("/profile")}
+            className="text-sm text-blue-600 hover:underline mb-6"
+          >
+            ← Back to my profile
+          </button>
+        )}
+
+        {isOwnProfile && editing ? (
           <div className="space-y-3">
             {["bio", "avatarUrl", "avatarAlt", "bannerUrl", "bannerAlt"].map((field) => (
               <input
@@ -167,7 +183,6 @@ function Profile() {
                 className="w-full border p-2 rounded bg-white"
               />
             ))}
-
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -177,7 +192,6 @@ function Profile() {
               />
               Register as Venue Manager
             </label>
-
             <div className="flex gap-2">
               <button
                 onClick={handleSaveChanges}
@@ -195,49 +209,66 @@ function Profile() {
           </div>
         ) : (
           <>
-            <p className="text-sm text-gray-600 italic mb-4">{profile.bio || "No bio available."}</p>
+            <p className="text-sm text-gray-600 italic mb-4">
+              {profile.bio || "No bio available."}
+            </p>
             <ul className="text-sm text-gray-800 space-y-1 mb-6">
               <li>🏷️ Role: {profile.venueManager ? "Venue Manager" : "Customer"}</li>
               <li>🏡 Venues: {profile._count?.venues ?? 0}</li>
-              <li>📆 Bookings: {profile._count?.bookings ?? 0}</li>
             </ul>
-
-            <div className="flex gap-4 flex-wrap">
-              <button
-                onClick={() => setEditing(true)}
-                className="bg-yellow-400 text-white px-4 py-2 rounded-full"
-              >
-                Edit Profile
-              </button>
-
-              {profile.venueManager && (
+            {isOwnProfile && (
+              <div className="flex gap-4 flex-wrap">
                 <button
-                  onClick={() => navigate("/create-venue")}
-                  className="bg-green-600 text-white px-4 py-2 rounded-full"
+                  onClick={() => setEditing(true)}
+                  className="bg-yellow-400 text-white px-4 py-2 rounded-full"
                 >
-                  Create Venue
+                  Edit Profile
                 </button>
-              )}
-            </div>
+                {profile.venueManager && (
+                  <button
+                    onClick={() => navigate("/create-venue")}
+                    className="bg-green-600 text-white px-4 py-2 rounded-full"
+                  >
+                    Create Venue
+                  </button>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>
 
-      {profile.bookings?.length > 0 && (
+      {isOwnProfile && profile.bookings?.length > 0 && (
         <div className="mt-10">
-          <h2 className="text-2xl font-pacifico text-[var(--color-button-turq)] mb-4">📆 Your Bookings</h2>
+          <h2 className="text-2xl font-pacifico text-[var(--color-button-turq)] mb-4">
+            📆 Your Bookings
+          </h2>
           {profile.bookings.map((b) => (
             <BookingCard key={b.id} booking={b} onCancel={handleBookingCancel} />
           ))}
         </div>
       )}
-      {profile.venueManager && profile.venues?.length > 0 && (
-        <div className="mt-10">
-          <YourVenues venues={profile.venues} onVenueDeleted={handleVenueDeleted} />
-        </div>
+
+      {profile.venueManager && (
+        <>
+          {profile.venues?.length > 0 ? (
+            <YourVenues
+              venues={profile.venues}
+              onVenueDeleted={isOwnProfile ? handleVenueDeleted : null}
+              readOnly={!isOwnProfile}
+            />
+          ) : (
+            <p className="text-gray-500 italic text-sm mt-6">
+              {isOwnProfile
+                ? "You haven’t created any venues yet."
+                : `${profile.name} hasn’t published any venues yet.`}
+            </p>
+          )}
+        </>
       )}
     </div>
   );
 }
 
 export default Profile;
+
