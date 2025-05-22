@@ -27,7 +27,7 @@ function VenueCard({ venue }) {
 
         <Link
           to={`/venue/${venue.id}`}
-          className="inline-block mt-3 text-white bg-[var(--color-button-turq)] hover:bg-opacity-90 text-sm px-4 py-1.5 rounded-full transition"
+          className="inline-block mt-3 font-pacifico text-white bg-[var(--color-button-turq)] hover:bg-opacity-90 text-sm px-4 py-1.5 rounded-full transition hover:brightness-110"
         >
           View details
         </Link>

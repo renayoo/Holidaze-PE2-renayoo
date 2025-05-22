@@ -127,7 +127,7 @@ function Venue() {
       )}
 
       <h1 className="font-pacifico text-3xl text-center mb-6">{venue.name}</h1>
-
+      
       <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="md:w-1/2">
           <ImgCarousel images={venue.media} />
@@ -214,9 +214,9 @@ function Venue() {
               <button
                 onClick={handleBooking}
                 disabled={nights === 0}
-                className="w-full py-2 rounded-full bg-gradient-to-r from-teal-500 to-teal-300 text-white font-semibold hover:brightness-110 disabled:opacity-50"
+                className="w-full py-2 font-pacifico rounded-full bg-gradient-to-r from-teal-500 to-teal-300 text-white hover:brightness-110 disabled:opacity-50"
               >
-                Book Now
+                Book now
               </button>
             ) : (
               <p className="text-red-600">You must be logged in to book.</p>
@@ -238,9 +238,16 @@ function Venue() {
                 </span>
               </div>
             )}
+            
           </div>
         </div>
       </div>
+      <button
+        onClick={() => navigate("/")}
+        className="mt-6 mb-6 py-2 font-pacifico px-4 rounded-full bg-gradient-to-r from-teal-500 to-teal-300 text-white hover:brightness-110 transition"
+      >
+        ← Back to Home
+      </button>
 
       <style>{`
         @keyframes fade-in {
