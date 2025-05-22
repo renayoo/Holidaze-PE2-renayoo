@@ -30,7 +30,7 @@ function Header() {
           {!user && (
             <>
               <Link to="/login" className="hover:underline py-2" onClick={() => setMenuOpen(false)}>Login</Link>
-              <Link to="/register" className="hover:underline py-2 mb-4" onClick={() => setMenuOpen(false)}>Register</Link>
+              <Link to="/register" className="hover:underline py-2" onClick={() => setMenuOpen(false)}>Register</Link>
             </>
           )}
 
