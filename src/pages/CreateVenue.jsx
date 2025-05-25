@@ -30,7 +30,6 @@ function CreateVenue() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  // 👇 Håndter input-endringer
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
 
@@ -60,7 +59,6 @@ function CreateVenue() {
     }
   }
 
-  // 👇 Håndter media-endringer
   function handleMediaChange(e, index, field) {
     const { value } = e.target;
     setForm((prev) => {
